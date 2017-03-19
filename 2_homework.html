@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    div {
+      text-align: center;
+      margin: 10px auto;
+    }
+
+    #box {
+      padding: 10px;
+      border: 1px solid #aaa;
+      border-radius: 3px;;
+      width: 240px;
+    }
+  </style>
+</head>
+<body>
+<h3>英雄选择</h3>
+
+<div id="box">
+  <img src="img/p0.png">
+</div>
+<hr/>
+<div id="container">
+  <img src="img/p3.png">
+  <img src="img/p4.png">
+  <img src="img/p5.png">
+</div>
+
+<script src="js/jquery-1.11.3.js"></script>
+<script>
+  //为拖放源对象（三个小飞机）做事件绑定
+  $('#container img').on('dragstart', function (e) {
+    //console.log('src - dragstart ');
+
+    //记录拖动的是哪一个小飞机 k-v
+    var src = $(this).attr('src') ;
+    //e.dataTransfer.setData('PlaneImgSrc', src);
+    //jQuery调用的中e不是原生的event对象！而是一个封装对象
+    e.originalEvent.dataTransfer.setData('PlaneImgSrc', src);
+  })
+  $('#container img').on('drag', function () {
+  })
+  $('#container img').on('dragend', function () {
+  })
+
+  //为拖放目标对象（div#box）做事件绑定
+  $('#box').on('dragenter', function () {
+  });
+  $('#box').on('dragover', function (e) {
+    e.preventDefault();
+  });
+  $('#box').on('dragleave', function () {
+  });
+  $('#box').on('drop', function (e) {
+    console.log('target - drop')
+
+    //隐藏？小飞机
+    $(this).children('[src="img/p0.png"]').hide();
+
+    //目标对象想读取源对象保存的数据
+    var src = e.originalEvent.dataTransfer.getData('PlaneImgSrc');
+    //根据#box中当前飞机的数量，决定是添加还是替换
+    if($('#box img').length >= 2){ //当前至少有2个飞机
+      //var old = $('#box  img:not(:hidden)').replaceWith($(`[src="${src}"]`)); //此处使用旧替换新，返回被替换的旧元素
+      //$('#container').append(old);
+      //上述的replaceWith会删除掉老元素事件监听函数
+      $('#container').append($('#box  img:not(:hidden)'));
+      $('#box').append($(`[src="${src}"]`));
+    }else { //当前只有一个隐藏的小飞机
+      $(this).append($(`[src="${src}"]`));
+    }
+  });
+
+
+
+
+  //为目标对象(保存所有飞机的#container)绑定事件监听
+  $('#container').on('dragover', function(e){
+    e.preventDefault();
+  })
+  $('#container').on('drop', function(e){
+    //目标对象读取源对象保存的数据
+	console.log(111);
+    var src = e.originalEvent.dataTransfer.getData('PlaneImgSrc');
+    $(this).append($(`[src="${src}"]`));
+    //显示隐藏的？飞机
+    $('#box  :hidden').show();
+  })
+</script>
+</body>
+</html>
